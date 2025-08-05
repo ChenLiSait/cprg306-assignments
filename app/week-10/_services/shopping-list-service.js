@@ -1,4 +1,6 @@
 // week-10/_services/shopping-list-service.js
+"use client";
+
 import { db } from "../_utils/firebase";
 import {
   collection,
@@ -7,8 +9,15 @@ import {
   deleteDoc,
   doc,
   query,
+  orderBy,
+  onSnapshot,
 } from "firebase/firestore";
 
+/**
+ * @param {string} userId
+ * @param {(items: any[]) => void} callback
+ * @returns {() => void} unsubscribe
+ */
 export async function getItems(userId) {
   if (!userId) throw new Error("getItems: missing userId");
 
@@ -58,3 +67,17 @@ export async function deleteItem(userId, itemId) {
   const itemRef = doc(db, "users", userId, "items", itemId);
   await deleteDoc(itemRef);
 }
+export function subscribeToItems(userId, callback) {
+  if (!userId) throw new Error("subscribeToItems: missing userId");
+  const itemsCol = collection(db, "users", userId, "items");
+  const q = query(itemsCol, orderBy("__name__"));
+  return onSnapshot(
+    q,
+    (snap) => {
+      const list = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+      callback(list);
+    },
+    (err) => console.error("subscribeToItems error:", err)
+  );
+}
+console.log("shopping-list-service: using firebase from ../_utils/firebase.js");

@@ -24,7 +24,7 @@ export default function LandingPage() {
             👋 Welcome, {user.displayName} ({user.email})
           </p>
           <div className="flex justify-center gap-4">
-            <Link href="/week-9/shopping-list">
+            <Link href="/week-10/shopping-list">
               <button className="bg-green-500 text-white px-4 py-2 rounded">
                 Go to Shopping List
               </button>
